@@ -25,7 +25,10 @@ export class Gallery extends Component {
         query,
         page
       );
-      this.setState({ photos, total_results });
+      this.setState(prevState => ({
+        photos: [...prevState.photos, ...photos],
+        total_results,
+      }));
     } catch (error) {
       this.setState({ error: error.message });
     }
@@ -41,7 +44,15 @@ export class Gallery extends Component {
     });
   };
 
+  incrementPage = () => {
+    this.setState(prevState => ({
+      page: prevState.page + 1,
+    }));
+  };
+
   render() {
+    const { total_results, page } = this.state;
+
     return (
       <>
         <SearchForm onSubmit={this.onSubmit} />
@@ -58,6 +69,9 @@ export class Gallery extends Component {
         </Grid>
         {this.state.error && (
           <Text textAlign="center">Sorry. Something went wrong ... 😭</Text>
+        )}
+        {page < Math.ceil(total_results / 15) && (
+          <Button onClick={this.incrementPage}>Load more</Button>
         )}
       </>
     );
